@@ -15,7 +15,7 @@ pipeline{
         }
         stage('Checkout from Git'){
             steps{
-                git branch: 'main', url: 'https://github.com/Aj7Ay/uber-clone.git'
+                git branch: 'main', url: 'https://github.com/rameshkumarvermagithub/uber-clone.git'
             }
         }
         stage("Sonarqube Analysis "){
@@ -29,7 +29,7 @@ pipeline{
         stage("quality gate"){
            steps {
                 script {
-                    waitForQualityGate abortPipeline: false, credentialsId: 'Sonar-token'
+                    waitForQualityGate abortPipeline: false, credentialsId: 'sonar'
                 }
             }
         }
@@ -54,22 +54,22 @@ pipeline{
                 script{
                    withDockerRegistry(credentialsId: 'docker', toolName: 'docker'){
                        sh "docker build -t uber ."
-                       sh "docker tag uber sevenajay/uber:latest "
-                       sh "docker push sevenajay/uber:latest "
+                       sh "docker tag uber rameshkumarverma/uber:latest "
+                       sh "docker push rameshkumarverma/uber:latest "
                     }
                 }
             }
         }
         stage("TRIVY"){
             steps{
-                sh "trivy image sevenajay/uber:latest > trivyimage.txt"
+                sh "trivy image rameshkumarverma/uber:latest > trivyimage.txt"
             }
         }
-        stage("deploy_docker"){
-            steps{
-                sh "docker run -d --name uber -p 3000:3000 sevenajay/uber:latest"
-            }
-        }
+        // stage("deploy_docker"){
+        //     steps{
+        //         sh "docker run -d --name uber -p 3000:3000 rameshkumarverma/uber:latest"
+        //     }
+        // }
         stage('Deploy to kubernets'){
             steps{
                 script{
